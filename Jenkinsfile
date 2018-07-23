@@ -16,7 +16,7 @@ pipeline {
                 script {
                     app = docker.build("sadhanasai/train-schedule")
                     app.inside {
-                        sh 'echo $(curl localhost:8084)'
+                        sh 'echo $(curl localhost:8080)'
                     }
                 }
             }
@@ -27,7 +27,7 @@ pipeline {
             }
             steps {
                 script {
-                    docker.withRegistry('https://registry.hub.docker.com', 'docker_hub_login') {
+                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub_login') {
                         app.push("${env.BUILD_NUMBER}")
                         app.push("latest")
                     }
@@ -50,7 +50,7 @@ pipeline {
                         } catch (err) {
                             echo: 'caught error: $err'
                         }
-                        sh "sshpass -p '$USERPASS' -v ssh -o StrictHostKeyChecking=no $USERNAME@$testingprod \"docker run --restart always --name train-schedule -p 8084:8080 -d sadhanasai/train-schedule:${env.BUILD_NUMBER}\""
+                        sh "sshpass -p '$USERPASS' -v ssh -o StrictHostKeyChecking=no $USERNAME@$testingprod \"docker run --restart always --name train-schedule -p 8085:8080 -d sadhanasai/train-schedule:${env.BUILD_NUMBER}\""
                     }
                 }
             }
